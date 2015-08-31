@@ -4,8 +4,9 @@ import logging
 
 from flask import Flask, session, request, redirect, url_for, jsonify
 from flask_oauthlib.provider import OAuth1Provider
+from jinja2 import escape
 
-from models import Client, User
+from models import Client, User, RequestToken
 from utils import (current_user, login_required,
         login as do_login, logout as do_logout)
 from storage import users, clients, request_tokens, access_tokens, nonces
@@ -117,15 +118,24 @@ def request_token():
 @provider.authorize_handler
 def authorize(*args, **kwargs):
     if request.method == 'GET':
-        ck = kwargs['resource_owner_key']
-        c = [c for c in clients if c.client_key == ck][0]
-        return '''<form action={url} method="post">
+        rt = kwargs['resource_owner_key']   # This is somehow a request token.
+        t = [t for t in request_tokens
+                if t.token == rt][0]
+        assert isinstance(t, RequestToken)
+        c = t.client
+        assert isinstance(c, Client)
+        return '''<form action="{url}" method="post">
+                You are authorising client:
+                <br />
+                <pre>{client}</pre>
+                <br />
                 <input type="submit" value="authorize" />
-            </form>'''.format(url=url_for('authorize'))
-    elif request.method == 'POST':
-        return True
+            </form>'''.format(
+                    url=url_for('authorize'),
+                    client=escape(repr(c)))
     else:
-        raise Exception
+        assert request.method == 'POST', request.method
+        return True
 
 @app.route('/oauth/access_token')
 @provider.access_token_handler
