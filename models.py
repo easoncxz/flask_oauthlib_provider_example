@@ -33,12 +33,18 @@ class RequestToken:
 
 class Nonce:
 
-    def __init__(self):
-        self.client_key = None
-        self.timestamp = None
-        self.nonce = None
-        self.request_token = None
-        self.access_token = None
+    def __init__(
+            self,
+            client_key,
+            timestamp,
+            nonce,
+            request_token,
+            access_token):
+        self.client_key = client_key
+        self.timestamp = timestamp
+        self.nonce = nonce
+        self.request_token = request_token
+        self.access_token = access_token
 
 class AccessToken:
 
