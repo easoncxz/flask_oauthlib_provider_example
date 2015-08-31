@@ -1,5 +1,6 @@
 
 import os
+import logging
 
 from flask import Flask, session, request, redirect, url_for, jsonify
 from flask_oauthlib.provider import OAuth1Provider
@@ -162,6 +163,7 @@ def add_hard_coded_client():
             clients.append(c)
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
     app.run('127.0.0.1', 5000)
 
 if __name__ == '__main__':
