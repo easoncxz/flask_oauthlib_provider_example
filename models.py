@@ -14,14 +14,11 @@ class Client:
         self.redirect_uris = redirect_uris
         self.client_key = gen_salt(30)
         self.client_secret = gen_salt(40)
+        self.default_realms = ['r']
 
     @property
     def default_redirect_uri(self):
         return self.redirect_uris[0]
-
-    @property
-    def default_realms(self):
-        return ['r']
 
 class RequestToken:
 
@@ -29,7 +26,7 @@ class RequestToken:
         self.client = client
         self.user = user
         self.redirect_uri = redirect_uri
-        self.realms = []
+        self.realms = ['r']
         self.token = gen_salt(30)
         self.secret = gen_salt(40)
         self.verifier = gen_salt(40)
@@ -48,6 +45,6 @@ class AccessToken:
     def __init__(self, client, user):
         self.client = client
         self.user = user
-        self.realms = []
+        self.realms = ['r']
         self.token = gen_salt(30)
         self.secret = gen_salt(40)

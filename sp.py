@@ -84,6 +84,7 @@ def logout():
 @login_required('login')
 def client():
     c = Client(current_user(), ['http://localhost:8000/oauth-callback'])
+    assert c.default_realms == ['r'], repr(c.default_realms)
     clients.append(c)
     return jsonify(
             client_key=c.client_key,
@@ -155,6 +156,7 @@ def add_hard_coded_client():
             c = Client(
                     user,
                     redirect_uris=['http://localhost:8000/oauth-callback/'])
+            assert c.default_realms == ['r'], repr(c.default_realms)
             c.client_key = ck
             c.client_secret = cs
             clients.append(c)
