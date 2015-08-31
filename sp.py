@@ -100,6 +100,16 @@ def client_list():
             'client_secret': c.client_secret}
         for c in clients])
 
+@app.route('/nonce-list')
+def nonce_list():
+    return jsonify(nonces=[{
+            'client_key': n.client_key,
+            'timestamp': n.timestamp,
+            'nonce': n.nonce,
+            'request_token': n.request_token,
+            'access_token': n.access_token}
+        for n in nonces])
+
 @app.route('/oauth/request_token')
 @provider.request_token_handler
 def request_token():
