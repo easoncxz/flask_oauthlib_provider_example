@@ -1,0 +1,11 @@
+
+# virtualenv
+.venv
+
+# vim swap files
+**/.*.swp
+
+# Python object files
+**/__pycache__
+**/*.pyc
+**/*.pyo
