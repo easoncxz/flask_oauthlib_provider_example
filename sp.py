@@ -46,10 +46,8 @@ def index():
     return '''
         Index page of user: {user}
         <br />
-        {info}
-        '''.format(
-                user=session['user'],
-                info='visit <code>/client-list</code> to get consumer key/secrets.')
+        visit <a href="/client-list">/client-list</a> to get consumer key/secrets.
+        '''.format(user=session['user'])
 
 
 @app.route('/login', methods=['POST', 'GET'])
