@@ -2,7 +2,7 @@
 import logging
 
 from models import User, Client, RequestToken, AccessToken, Nonce
-from utils import current_user
+from utils import current_user, log_at
 from storage import clients, request_tokens, access_tokens, nonces, users
 
 def load_client(client_key):
@@ -47,6 +47,7 @@ def save_access_token(token, req):
     t.realms.extend(token['oauth_authorized_realms'])
     access_tokens.append(t)
 
+@log_at(logging.debug)
 def load_nonce(client_key, timestamp, nonce, request_token, access_token):
     return [n for n in nonces if (
             n.client_key == client_key and
@@ -55,6 +56,7 @@ def load_nonce(client_key, timestamp, nonce, request_token, access_token):
             n.request_token == request_token and
             n.access_token == access_token)][0]
 
+@log_at(logging.debug)
 def save_nonce(client_key, timestamp, nonce, request_token, access_token):
     n = Nonce(
         client_key=client_key,

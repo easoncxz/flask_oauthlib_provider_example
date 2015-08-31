@@ -24,3 +24,16 @@ def logout():
 
 def current_user():
     return session.get('user', None)
+
+def log_at(level):
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            level("Calling function {}".format(f))
+            level("The args are: {}".format(repr(args)))
+            level("The kwargs are: {}".format(repr(kwargs)))
+            ret = f(*args, **kwargs)
+            level("The return value is: {}".format(ret))
+            return ret
+        return wrapped
+    return decorator
