@@ -5,12 +5,15 @@ from models import User, Client, RequestToken, AccessToken, Nonce
 from utils import current_user, log_at
 from storage import clients, request_tokens, access_tokens, nonces, users
 
+@log_at(logging.debug)
 def load_client(client_key):
     return [c for c in clients if c.client_key == client_key][0]
 
+@log_at(logging.debug)
 def load_request_token(token):
     return [t for t in request_tokens if t.token == token][0]
 
+@log_at(logging.debug)
 def save_request_token(token, req):
     rt = token['oauth_token']
     rts = token['oauth_token_secret']
@@ -21,21 +24,25 @@ def save_request_token(token, req):
             redirect_uri=req.redirect_uri)  # ??
     request_tokens.append(t)
 
+@log_at(logging.debug)
 def load_verifier(verifier, token):
     return [t for t in request_tokens if (
             t.token == token and t.verifier == verifier)][0]
 
+@log_at(logging.debug)
 def save_verifier(token, verifier, *args, **kwargs):
     t = [t for t in request_tokens if t.token == token][0]
     t.verifier = verifier
     t.user = current_user()
     return t
 
+@log_at(logging.debug)
 def load_access_token(client_key, token, *args, **kwargs):
     return [t
             for t in access_tokens
             if t.client_key == client_key][0]
 
+@log_at(logging.debug)
 def save_access_token(token, req):
     at = token['oauth_token']
     ats = token['oauth_token_secret']
