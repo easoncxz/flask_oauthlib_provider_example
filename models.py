@@ -22,13 +22,13 @@ class Client:
 
 class RequestToken:
 
-    def __init__(self, client, user, redirect_uri):
+    def __init__(self, client, user, token, secret, redirect_uri):
         self.client = client
         self.user = user
         self.redirect_uri = redirect_uri
         self.realms = ['r']
-        self.token = gen_salt(30)
-        self.secret = gen_salt(40)
+        self.token = token
+        self.secret = secret
         self.verifier = gen_salt(40)
 
 class Nonce:

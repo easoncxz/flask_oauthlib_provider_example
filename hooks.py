@@ -23,10 +23,12 @@ def load_request_token(token):
 def save_request_token(token, req):
     rt = token['oauth_token']
     rts = token['oauth_token_secret']
+    user = current_user()
     t = RequestToken(
+            client=req.client,  # ??
+            user=user,
             token=rt,
             secret=rts,
-            client=req.client,  # ??
             redirect_uri=req.redirect_uri)  # ??
     request_tokens.append(t)
 
