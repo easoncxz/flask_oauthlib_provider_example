@@ -1,6 +1,7 @@
 
 import code
 import random
+import logging
 
 from flask import Flask, request, session, url_for, redirect
 
@@ -26,7 +27,9 @@ def index():
 
 @app.route('/login')
 def login():
-    return lepture.authorize(callback=url_for('callback'))
+    callback = url_for('callback', _external=True)
+    logging.debug("Client using the callback: {}".format(callback))
+    return lepture.authorize(callback=callback)
 
 @app.route('/logout')
 def logout():
@@ -53,6 +56,7 @@ def set_access_token(token, secret):
     session['token_credentials'] = token, secret
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
     app.run(host='localhost', port=8000)
 
 if __name__ == '__main__':

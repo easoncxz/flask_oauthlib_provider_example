@@ -164,7 +164,7 @@ def add_hard_coded_client():
                 if c.client_key == ck]) == 0:
             c = Client(
                     user,
-                    redirect_uris=['http://localhost:8000/oauth-callback/'])
+                    redirect_uris=['http://localhost:8000/oauth-callback'])
             assert c.default_realms == ['r'], repr(c.default_realms)
             c.client_key = ck
             c.client_secret = cs
