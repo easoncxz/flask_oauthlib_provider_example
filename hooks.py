@@ -45,21 +45,23 @@ def save_access_token(token, req):
             token=at,
             secret=ats)
     t.realms.extend(token['oauth_authorized_realms'])
+    access_tokens.append(t)
 
-def load_nonce(client_key, timestamp, nonce, rt, at):
+def load_nonce(client_key, timestamp, nonce, request_token, access_token):
     return [n for n in nonces if (
             n.client_key == client_key and
             n.timestamp == timestamp and
             n.nonce == nonce and
-            n.request_token == rt and
-            n.access_token == at)][0]
+            n.request_token == request_token and
+            n.access_token == access_token)][0]
 
-def save_nonce(client_key, timestamp, nonce, rt, at):
+def save_nonce(client_key, timestamp, nonce, request_token, access_token):
     n = Nonce(
         client_key=client_key,
         timestamp=timestamp,
         nonce=nonce,
-        request_token=rt,
-        access_token=at)
+        request_token=request_token,
+        access_token=access_token)
+    nonces.append(n)
     return n
 
