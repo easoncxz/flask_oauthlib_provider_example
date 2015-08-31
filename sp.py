@@ -10,7 +10,7 @@ from jinja2 import escape
 from models import Client, User, RequestToken
 from utils import (current_user, login_required,
         login as do_login, logout as do_logout,
-        log_at)
+        log_at, block_after_return)
 from storage import users, clients, request_tokens, access_tokens, nonces
 from hooks import (load_client,
         load_request_token, save_request_token,
@@ -118,6 +118,8 @@ def request_token():
 
 @app.route('/oauth/authorize', methods=['GET', 'POST'])
 @login_required('login')
+@log_at(logging.info)
+#@block_after_return
 @provider.authorize_handler
 def authorize(*args, **kwargs):
     if request.method == 'GET':

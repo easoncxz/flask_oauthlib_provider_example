@@ -37,3 +37,12 @@ def log_at(level):
             return ret
         return wrapped
     return decorator
+
+def block_after_return(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        ret = f(*args, **kwargs)
+        import code
+        code.interact(local=vars())
+        return ret
+    return decorator
