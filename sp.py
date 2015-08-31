@@ -24,6 +24,7 @@ app.debug = True
 app.secret_key = 'lol'
 app.config['OAUTH1_PROVIDER_ENFORCE_SSL'] = False
 app.config['OAUTH1_PROVIDER_KEY_LENGTH'] = (10, 100)
+app.config['OAUTH1_PROVIDER_REALMS'] = ['r']
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.trc = app.test_request_context
 provider = OAuth1Provider(app)
