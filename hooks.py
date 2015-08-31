@@ -7,11 +7,17 @@ from storage import clients, request_tokens, access_tokens, nonces, users
 
 @log_at(logging.debug)
 def load_client(client_key):
-    return [c for c in clients if c.client_key == client_key][0]
+    try:
+        return [c for c in clients if c.client_key == client_key][0]
+    except IndexError:
+        return None
 
 @log_at(logging.debug)
 def load_request_token(token):
-    return [t for t in request_tokens if t.token == token][0]
+    try:
+        return [t for t in request_tokens if t.token == token][0]
+    except IndexError:
+        return None
 
 @log_at(logging.debug)
 def save_request_token(token, req):
@@ -26,8 +32,11 @@ def save_request_token(token, req):
 
 @log_at(logging.debug)
 def load_verifier(verifier, token):
-    return [t for t in request_tokens if (
-            t.token == token and t.verifier == verifier)][0]
+    try:
+        return [t for t in request_tokens if (
+                t.token == token and t.verifier == verifier)][0]
+    except IndexError:
+        return None
 
 @log_at(logging.debug)
 def save_verifier(token, verifier, *args, **kwargs):
@@ -38,9 +47,12 @@ def save_verifier(token, verifier, *args, **kwargs):
 
 @log_at(logging.debug)
 def load_access_token(client_key, token, *args, **kwargs):
-    return [t
-            for t in access_tokens
-            if t.client_key == client_key][0]
+    try:
+        return [t
+                for t in access_tokens
+                if t.client_key == client_key][0]
+    except IndexError:
+        return None
 
 @log_at(logging.debug)
 def save_access_token(token, req):
@@ -56,12 +68,15 @@ def save_access_token(token, req):
 
 @log_at(logging.debug)
 def load_nonce(client_key, timestamp, nonce, request_token, access_token):
-    return [n for n in nonces if (
-            n.client_key == client_key and
-            n.timestamp == timestamp and
-            n.nonce == nonce and
-            n.request_token == request_token and
-            n.access_token == access_token)][0]
+    try:
+        return [n for n in nonces if (
+                n.client_key == client_key and
+                n.timestamp == timestamp and
+                n.nonce == nonce and
+                n.request_token == request_token and
+                n.access_token == access_token)][0]
+    except IndexError:
+        return None
 
 @log_at(logging.debug)
 def save_nonce(client_key, timestamp, nonce, request_token, access_token):
