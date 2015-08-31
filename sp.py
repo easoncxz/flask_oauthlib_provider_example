@@ -2,13 +2,15 @@
 import os
 import logging
 
-from flask import Flask, session, request, redirect, url_for, jsonify
+from flask import (Flask, session, request, redirect, url_for, jsonify,
+        render_template)
 from flask_oauthlib.provider import OAuth1Provider
 from jinja2 import escape
 
 from models import Client, User, RequestToken
 from utils import (current_user, login_required,
-        login as do_login, logout as do_logout)
+        login as do_login, logout as do_logout,
+        log_at)
 from storage import users, clients, request_tokens, access_tokens, nonces
 from hooks import (load_client,
         load_request_token, save_request_token,
@@ -115,6 +117,7 @@ def request_token():
     return {}
 
 @app.route('/oauth/authorize', methods=['GET', 'POST'])
+@login_required('login')
 @provider.authorize_handler
 def authorize(*args, **kwargs):
     if request.method == 'GET':
@@ -124,18 +127,12 @@ def authorize(*args, **kwargs):
         assert isinstance(t, RequestToken)
         c = t.client
         assert isinstance(c, Client)
-        return '''<form action="{url}" method="post">
-                You are authorising client:
-                <br />
-                <pre>{client}</pre>
-                <br />
-                <input type="submit" value="authorize" />
-            </form>'''.format(
-                    url=url_for('authorize'),
-                    client=escape(repr(c)))
+        return render_template('authorize.html',
+                url=url_for('authorize'),
+                client=repr(c))
     else:
         assert request.method == 'POST', request.method
-        return True
+        return request.form['authorize'] == 'yes'
 
 @app.route('/oauth/access_token')
 @provider.access_token_handler

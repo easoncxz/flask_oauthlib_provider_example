@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <form action="{{ url }}" method="post">
+        You are authorising client: <br />
+        <pre>{{ client }}</pre> <br />
+        <input type="radio" name="authorize" value="yes">Authorize</input> <br />
+        <input type="radio" name="authorize" value="no">Refuse</input> <br />
+        <input type="submit" value="authorize" />
+    </form>
+</body>
+</html>
