@@ -2,14 +2,14 @@ import code
 import random
 import logging
 
-from flask import Flask, request, session, url_for, redirect
+from flask import Flask, request, session, url_for, redirect, jsonify
 
 from lepture_flask_oauthlib import make_lepture
 
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'lol-key'
-lepture = make_lepture(app, 'dev_consumer_key', 'dev_consumer_secret')
+lepture = make_lepture(app, 'dev', 'dev')
 
 @app.route('/')
 def index():
@@ -18,12 +18,12 @@ def index():
         return '''<a href="{url}">login here.</a>'''.format(
                 url=url_for('login'))
     else:
-        resp = lepture.get('me')
-        return resp.text
+        resp = lepture.get('email')
+        return jsonify(resp.data)
 
 @app.route('/login')
 def login():
-    return lepture.authorize(callback=url_for('callback', _external=True))
+    return lepture.authorize(callback=url_for('authorized', _external=True))
 
 @app.route('/logout')
 def logout():
@@ -40,6 +40,10 @@ def callback():
         ats = authorized_response['oauth_token_secret']
         set_access_token(at, ats)
         return redirect(url_for('index'))
+
+@app.route('/authorized')
+def authorized(*args, **kwargs):
+    return callback(*args, **kwargs)
 
 @lepture.tokengetter
 def get_access_token():
