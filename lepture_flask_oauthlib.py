@@ -10,7 +10,10 @@ def make_lepture(app, ck, cs):
     return oauth.remote_app('lepture',
             consumer_key=ck,
             consumer_secret=cs,
+            request_token_params={
+                'realm': 'r'},
             base_url='http://127.0.0.1:5000/api/',
             request_token_url='http://127.0.0.1:5000/oauth/request_token',
+            access_token_method='GET',
             access_token_url='http://127.0.0.1:5000/oauth/access_token',
             authorize_url='http://127.0.0.1:5000/oauth/authorize')

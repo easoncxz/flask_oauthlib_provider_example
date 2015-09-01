@@ -166,8 +166,8 @@ def me():
     return jsonify(username=user.username)
 
 def add_hard_coded_client():
-    ck = '38zgEsThKKD26hRcpJr3353Fd3rEQW'
-    cs = '87b6cbQrT2PPTiwI4M72NDQDVV0s6vJzFeXHNz7c'
+    ck = 'dev_consumer_key'
+    cs = 'dev_consumer_secret'
     user = current_user()
     if user is not None:
         if len([c for c in clients

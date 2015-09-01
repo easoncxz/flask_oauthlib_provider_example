@@ -1,4 +1,3 @@
-
 import code
 import random
 import logging
@@ -10,10 +9,7 @@ from lepture_flask_oauthlib import make_lepture
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'lol-key'
-lepture = make_lepture(
-    app,
-    '38zgEsThKKD26hRcpJr3353Fd3rEQW',
-    '87b6cbQrT2PPTiwI4M72NDQDVV0s6vJzFeXHNz7c')
+lepture = make_lepture(app, 'dev_consumer_key', 'dev_consumer_secret')
 
 @app.route('/')
 def index():
@@ -27,14 +23,11 @@ def index():
 
 @app.route('/login')
 def login():
-    callback = url_for('callback', _external=True)
-    logging.debug("Client using the callback: {}".format(callback))
-    return lepture.authorize(callback=callback)
+    return lepture.authorize(callback=url_for('callback', _external=True))
 
 @app.route('/logout')
 def logout():
-    if 'token_credentials' in session:
-        del session['token_credentials']
+    del_access_token()
     return redirect(url_for('index'))
 
 @app.route('/oauth-callback')
@@ -49,11 +42,14 @@ def callback():
         return redirect(url_for('index'))
 
 @lepture.tokengetter
-def get_access_token(token=None):
+def get_access_token():
     return session.get('token_credentials')
 
 def set_access_token(token, secret):
     session['token_credentials'] = token, secret
+
+def del_access_token():
+    session.pop('token_credentials', None)
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
