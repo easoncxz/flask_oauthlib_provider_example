@@ -121,6 +121,7 @@ def request_token():
 @log_at(logging.info)
 #@block_after_return
 @provider.authorize_handler
+@log_at(logging.info)
 def authorize(*args, **kwargs):
     if request.method == 'GET':
         rt = kwargs['resource_owner_key']   # This is somehow a request token.
