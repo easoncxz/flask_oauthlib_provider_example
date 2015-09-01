@@ -1,6 +1,8 @@
 
 import logging
 
+import oauthlib
+
 from models import User, Client, RequestToken, AccessToken, Nonce
 from utils import current_user, log_at
 from storage import clients, request_tokens, access_tokens, nonces, users
@@ -21,12 +23,15 @@ def load_request_token(token):
 
 @log_at(logging.debug)
 def save_request_token(token, req):
+    assert isinstance(req, oauthlib.common.Request)
     rt = token['oauth_token']
     rts = token['oauth_token_secret']
-    user = current_user()
+    realms = token['oauth_authorized_realms']
+    client = req.client
+    assert type(client) is Client, type(client)
+    assert isinstance(req.redirect_uri, str)    # py3
     t = RequestToken(
-            client=req.client,  # ??
-            user=user,
+            client=req.client,
             token=rt,
             secret=rts,
             redirect_uri=req.redirect_uri)  # ??
@@ -50,22 +55,21 @@ def save_verifier(token, verifier, *args, **kwargs):
 @log_at(logging.debug)
 def load_access_token(client_key, token, *args, **kwargs):
     try:
-        return [t
-                for t in access_tokens
-                if t.client_key == client_key][0]
+        return [t for t in access_tokens if t.client_key == client_key][0]
     except IndexError:
         return None
 
 @log_at(logging.debug)
 def save_access_token(token, req):
+    assert type(req) is oauthlib.common.Request, type(req)
+    client = req.client
+    assert type(client) is Client, type(client)
+    user = req.user
+    assert type(user) is User, type(user)
     at = token['oauth_token']
     ats = token['oauth_token_secret']
-    t = AccessToken(
-            client=req.client,  # ??
-            user=req.user,      # ??
-            token=at,
-            secret=ats)
-    t.realms.extend(token['oauth_authorized_realms'])
+    realms = token['oauth_authorized_realms']
+    t = AccessToken(client, user, realms, token=at, secret=ats)
     access_tokens.append(t)
 
 @log_at(logging.debug)

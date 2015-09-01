@@ -23,16 +23,20 @@ An OAuth Service Provider implementation, using Flask-OAuthlib,
 as per Lepture's example.
 """
 
+log = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'lol'
-app.config['OAUTH1_PROVIDER_ENFORCE_SSL'] = False
-app.config['OAUTH1_PROVIDER_KEY_LENGTH'] = (10, 100)
-app.config['OAUTH1_PROVIDER_REALMS'] = ['r']
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+app.config.update({
+    'OAUTH1_PROVIDER_ENFORCE_SSL': False,
+    'OAUTH1_PROVIDER_KEY_LENGTH': (10, 100),
+    'OAUTH1_PROVIDER_REALMS': ['r']})
+# Not present in Flask-OAuthlib tests:
+#os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.trc = app.test_request_context
-provider = OAuth1Provider(app)
 
+provider = OAuth1Provider(app)
 provider.clientgetter(load_client)
 provider.grantgetter(load_request_token)
 provider.grantsetter(save_request_token)
@@ -57,7 +61,7 @@ def index():
 def login():
     if request.method == 'GET':
         return '''
-            <p>The username is "user" and the password is "pass".</p>
+            <p>The username is "admin" and the password is "pass".</p>
             <br />
             <form method="post" action="{}">
                 Username
@@ -71,7 +75,7 @@ def login():
     else:
         u = request.form['username']
         p = request.form['password']
-        if u == 'user' and p == 'pass':
+        if u == 'admin' and p == 'pass':
             user = do_login(u)
             return redirect(request.args.get('next', url_for('index')))
         else:
@@ -95,7 +99,6 @@ def client():
 @app.route('/client-list')
 @login_required('login')
 def client_list():
-    add_hard_coded_client()
     return jsonify(clients=[{
             'client_key': c.client_key,
             'client_secret': c.client_secret}
@@ -112,24 +115,22 @@ def nonce_list():
         for n in nonces])
 
 @app.route('/oauth/request_token')
+@log_at(log.debug)
 @provider.request_token_handler
 def request_token():
     return {}
 
 @app.route('/oauth/authorize', methods=['GET', 'POST'])
 @login_required('login')
-@log_at(logging.info)
-#@block_after_return
+@log_at(log.debug)  # Log again so we see oauth.authorize_handler's return value.
 @provider.authorize_handler
-@log_at(logging.info)
+@log_at(log.debug)  # Log once.
 def authorize(*args, **kwargs):
     if request.method == 'GET':
         rt = kwargs['resource_owner_key']   # This is somehow a request token.
         t = [t for t in request_tokens
                 if t.token == rt][0]
-        assert isinstance(t, RequestToken)
         c = t.client
-        assert isinstance(c, Client)
         return render_template('authorize.html',
                 url=url_for('authorize'),
                 client=repr(c))
@@ -165,23 +166,32 @@ def me():
     assert isinstance(user, User)
     return jsonify(username=user.username)
 
-def add_hard_coded_client():
-    ck = 'dev_consumer_key'
-    cs = 'dev_consumer_secret'
+@app.route('/api/email')
+@provider.require_oauth('email')
+def email():
     user = current_user()
-    if user is not None:
-        if len([c for c in clients
-                if c.client_key == ck]) == 0:
-            c = Client(
-                    user,
-                    redirect_uris=['http://localhost:8000/oauth-callback'])
-            assert c.default_realms == ['r'], repr(c.default_realms)
-            c.client_key = ck
-            c.client_secret = cs
-            clients.append(c)
+    return jsonify(
+            username=user.username,
+            email='same-as-everyone-else@gmail.com')
+
+def add_hard_coded_client():
+    ck = 'dev'
+    cs = 'dev'
+    user = User(username='admin', password='pass')
+    log.debug("Created user: {}".format(user))
+    client = Client(
+            user,
+            ['http://localhost:8000/authorized'],
+            ['email'],
+            'dev',
+            'dev')
+    log.debug("Created client: {}".format(client))
+    users.append(user)
+    clients.append(client)
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
+    add_hard_coded_client()
     app.run('127.0.0.1', 5000)
 
 if __name__ == '__main__':

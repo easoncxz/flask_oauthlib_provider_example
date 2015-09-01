@@ -13,12 +13,13 @@ class User:
 
 class Client:
 
-    def __init__(self, user, redirect_uris):
+    def __init__(self, user, redirect_uris, realms,
+            client_key=None, client_secret=None):
         self.user = user
         self.redirect_uris = redirect_uris
-        self.client_key = gen_salt(30)
-        self.client_secret = gen_salt(40)
-        self.default_realms = ['r']
+        self.client_key = client_key or gen_salt(30)
+        self.client_secret = client_secret or gen_salt(40)
+        self._realms = list(realms)
 
     def __repr__(self):
         return ("<Client(user={}, redirect_uris={}, "
@@ -31,13 +32,17 @@ class Client:
     def default_redirect_uri(self):
         return self.redirect_uris[0]
 
+    @property
+    def default_realms(self):
+        return self._realms
+
 class RequestToken:
 
-    def __init__(self, client, user, token, secret, redirect_uri):
+    def __init__(self, client, token, secret, redirect_uri, realms=None, user=None):
         self.client = client
-        self.user = user
+        self.user = user  # At first RT's have no associated user.
         self.redirect_uri = redirect_uri
-        self.realms = ['r']
+        self.realms = list(realms)
         self.token = token
         self.secret = secret
         self.verifier = gen_salt(40)
@@ -72,12 +77,12 @@ class Nonce:
 
 class AccessToken:
 
-    def __init__(self, client, user):
+    def __init__(self, client, user, realms, token=None, secret=None):
         self.client = client
         self.user = user
-        self.realms = ['r']
-        self.token = gen_salt(30)
-        self.secret = gen_salt(40)
+        self.realms = list(realms)
+        self.token = token or gen_salt(30)
+        self.secret = secret or gen_salt(40)
 
     def __repr__(self):
         return ("<AccessToken(client={}, user={}, realms={}, "
