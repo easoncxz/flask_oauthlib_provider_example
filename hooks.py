@@ -26,7 +26,6 @@ def save_request_token(token, req):
     assert isinstance(req, oauthlib.common.Request)
     rt = token['oauth_token']
     rts = token['oauth_token_secret']
-    realms = token['oauth_authorized_realms']
     client = req.client
     assert type(client) is Client, type(client)
     assert isinstance(req.redirect_uri, str)    # py3
