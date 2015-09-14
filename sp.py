@@ -31,7 +31,7 @@ app.secret_key = 'lol'
 app.config.update({
     'OAUTH1_PROVIDER_ENFORCE_SSL': False,
     'OAUTH1_PROVIDER_KEY_LENGTH': (10, 100),
-    'OAUTH1_PROVIDER_REALMS': ['r']})
+    'OAUTH1_PROVIDER_REALMS': ['email']})
 # Not present in Flask-OAuthlib tests:
 #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.trc = app.test_request_context
@@ -50,28 +50,13 @@ provider.noncesetter(save_nonce)
 @app.route('/')
 @login_required('login')
 def index():
-    return '''
-        Index page of user: {user}
-        <br />
-        visit <a href="/client-list">/client-list</a> to get consumer key/secrets.
-        '''.format(user=session['user'])
-
+    return render_template('index.html')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
-        return '''
-            <p>The username is "admin" and the password is "pass".</p>
-            <br />
-            <form method="post" action="{}">
-                Username
-                <input type="text" name="username" />
-                <br />
-                Password
-                <input type="password" name="password" />
-                <input type="submit" />
-            </form>
-            '''.format(url_for('login'))
+        return render_template('login.html',
+                login_url=url_for('login'))
     else:
         u = request.form['username']
         p = request.form['password']
@@ -89,8 +74,15 @@ def logout():
 @app.route('/client')
 @login_required('login')
 def client():
-    c = Client(current_user(), ['http://localhost:8000/oauth-callback'])
-    assert c.default_realms == ['r'], repr(c.default_realms)
+    c = Client(
+        current_user(),
+        [
+            'http://localhost:8000/authorized',
+            'http://localhost/authorized',
+        ],
+        ['email'])
+    assert c.default_realms == ['email'], repr(c.default_realms)
+    assert c.realms == ['email'], c.realms
     clients.append(c)
     return jsonify(
             client_key=c.client_key,
@@ -181,7 +173,10 @@ def add_hard_coded_client():
     log.debug("Created user: {}".format(user))
     client = Client(
             user,
-            ['http://localhost:8000/authorized'],
+            [
+                'http://localhost:8000/authorized',
+                'http://localhost/authorized',
+            ],
             ['email'],
             'dev',
             'dev')
@@ -192,6 +187,7 @@ def add_hard_coded_client():
 def main():
     logging.basicConfig(level=logging.DEBUG)
     add_hard_coded_client()
+    log.debug('Hello, DEBUG.')
     app.run('127.0.0.1', 5000)
 
 if __name__ == '__main__':

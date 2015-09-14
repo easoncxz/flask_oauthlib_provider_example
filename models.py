@@ -19,7 +19,7 @@ class Client:
         self.redirect_uris = redirect_uris
         self.client_key = client_key or gen_salt(30)
         self.client_secret = client_secret or gen_salt(40)
-        self._realms = list(realms)
+        self.realms = list(realms)
 
     def __repr__(self):
         return ("<Client(user={}, redirect_uris={}, "
@@ -34,7 +34,7 @@ class Client:
 
     @property
     def default_realms(self):
-        return self._realms
+        return self.realms
 
 class RequestToken:
 
@@ -42,7 +42,7 @@ class RequestToken:
         self.client = client
         self.user = user  # At first RT's have no associated user.
         self.redirect_uri = redirect_uri
-        self.realms = list(realms)
+        self.realms = list(realms) if realms is not None else []
         self.token = token
         self.secret = secret
         self.verifier = gen_salt(40)

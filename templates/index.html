@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<body>
+    Index page of user: {{ user }} <br />
+    Visit <a href="{{ url_for('client_list') }}">
+        {{ url_for('client_list') | escape }}</a>
+        to get consumer key/secrets.
+</body>
+</html>
