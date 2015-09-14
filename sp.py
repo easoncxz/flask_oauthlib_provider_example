@@ -27,11 +27,11 @@ log = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.debug = True
-app.secret_key = 'lol'
+app.secret_key = 'development'
 app.config.update({
     'OAUTH1_PROVIDER_ENFORCE_SSL': False,
-    'OAUTH1_PROVIDER_KEY_LENGTH': (10, 100),
-    'OAUTH1_PROVIDER_REALMS': ['email']})
+    'OAUTH1_PROVIDER_KEY_LENGTH': (3, 30),
+    'OAUTH1_PROVIDER_REALMS': ['email', 'address']})
 # Not present in Flask-OAuthlib tests:
 #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app.trc = app.test_request_context
