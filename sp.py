@@ -124,7 +124,7 @@ def authorize(*args, **kwargs):
                 if t.token == rt][0]
         c = t.client
         return render_template('authorize.html',
-                url=url_for('authorize'),
+                url='',
                 client=repr(c))
     else:
         assert request.method == 'POST', request.method
