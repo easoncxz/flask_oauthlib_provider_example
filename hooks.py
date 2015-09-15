@@ -48,7 +48,7 @@ def load_verifier(verifier, token):
 @log_at(logging.debug)
 def save_verifier(token, verifier, *args, **kwargs):
     t = [t for t in request_tokens if t.token == token][0]
-    t.verifier = verifier
+    t.verifier = verifier['oauth_verifier']
     t.user = current_user()
     return t
 
