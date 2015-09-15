@@ -54,6 +54,10 @@ class RequestToken:
                     self.client, self.user, self.redirect_uri, self.realms,
                     self.token, self.secret, self.verifier)
 
+    @property
+    def client_key(self):
+        return self.client.client_key
+
 class Nonce:
 
     def __init__(
