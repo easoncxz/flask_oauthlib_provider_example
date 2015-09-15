@@ -69,7 +69,14 @@ def save_access_token(token, req):
         user, type(user))
     at = token['oauth_token']
     ats = token['oauth_token_secret']
-    realms = token['oauth_authorized_realms']
+    raw_realms = token['oauth_authorized_realms']
+    assert isinstance(raw_realms, str), "{!r}, of type {}".format(
+        raw_realms, type(raw_realms))
+    realms = raw_realms.split(' ')
+    assert isinstance(realms, list), "{!r}, of type {}".format(
+        realms, type(realms))
+    assert realms, realms
+    assert isinstance(realms[0], str), list(map(repr, realms))
     t = AccessToken(client, user, realms, token=at, secret=ats)
     access_tokens.append(t)
 
