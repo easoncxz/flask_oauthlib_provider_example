@@ -95,3 +95,7 @@ class AccessToken:
                 "token={}, secret={})>").format(
                     self.client, self.user, self.realms,
                     self.token, self.secret)
+
+    @property
+    def client_key(self):
+        return self.client.client_key
