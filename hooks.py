@@ -33,7 +33,8 @@ def save_request_token(token, req):
             client=req.client,
             token=rt,
             secret=rts,
-            redirect_uri=req.redirect_uri)  # ??
+            redirect_uri=req.redirect_uri,
+            realms=client.default_realms)  # ??
     request_tokens.append(t)
 
 @log_at(logging.debug)
