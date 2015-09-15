@@ -58,10 +58,11 @@ def login():
         return render_template('login.html',
                 login_url=url_for('login'))
     else:
-        u = request.form['username']
+        n = request.form['username']
         p = request.form['password']
-        if u == 'admin' and p == 'pass':
-            user = do_login(u)
+        if n == 'admin' and p == 'pass':
+            user = [u for u in users if u.username == n][0]
+            do_login(user)
             return redirect(request.args.get('next', url_for('index')))
         else:
             return 'Invalid credentials.'

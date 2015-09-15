@@ -65,7 +65,8 @@ def save_access_token(token, req):
     client = req.client
     assert type(client) is Client, type(client)
     user = req.user
-    assert type(user) is User, type(user)
+    assert type(user) is User, "user = {!r}, of type: {}".format(
+        user, type(user))
     at = token['oauth_token']
     ats = token['oauth_token_secret']
     realms = token['oauth_authorized_realms']

@@ -15,6 +15,8 @@ class Client:
 
     def __init__(self, user, redirect_uris, realms,
             client_key=None, client_secret=None):
+        assert isinstance(user, User), "user = {!r}, of type {}".format(
+            user, type(user))
         self.user = user
         self.redirect_uris = redirect_uris
         self.client_key = client_key or gen_salt(30)
