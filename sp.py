@@ -162,7 +162,10 @@ def me():
 @app.route('/api/email')
 @provider.require_oauth('email')
 def email():
-    user = current_user()
+    user = request.oauth.user
+    log.debug(
+        "The user we got from [Flask-]OAuthlib is: {!r}, of type: {}".format(
+            user, type(user)))
     return jsonify(
             username=user.username,
             email='same-as-everyone-else@gmail.com')
